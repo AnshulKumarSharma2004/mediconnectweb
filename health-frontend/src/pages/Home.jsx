@@ -1,9 +1,19 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { checkAuthAndHospital } from "../utils/auth";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    console.log("🚀 Get Started clicked!");
+    const { redirect } = checkAuthAndHospital();
+    console.log("➡️ Navigating to:", redirect);
+    navigate(redirect);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -15,11 +25,12 @@ const Home = () => {
           <p className="mb-6 text-emerald-600">
             Manage hospital, doctor, and patient workflows easily on our platform.
           </p>
-          <Link to="/login">
-            <button className="bg-emerald-500 text-white px-6 py-3 rounded hover:bg-emerald-400 transition">
-              Get Started
-            </button>
-          </Link>
+          <button
+            onClick={handleGetStarted}
+            className="bg-emerald-500 text-white px-6 py-3 rounded hover:bg-emerald-400 transition"
+          >
+            Get Started
+          </button>
         </div>
         <div className="md:w-1/2 mt-8 md:mt-0 flex justify-center">
           <img

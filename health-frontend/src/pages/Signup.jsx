@@ -106,8 +106,8 @@ const Signup = () => {
                 required
               >
                 <option value="">Select Role</option>
-                <option value="admin">Hospital_Admin</option>
-                <option value="doctor">Doctor</option>
+                <option value="HOSPITAL_ADMIN">HOSPITAL_ADMIN</option>
+                <option value="DOCTOR">DOCTOR</option>
               </select>
               <input
                 type="password"

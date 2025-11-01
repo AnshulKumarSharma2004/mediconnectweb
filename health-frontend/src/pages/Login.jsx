@@ -2,44 +2,51 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"; // ✅ Added axios
+import axios from "axios";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState(""); // ✅ for showing error
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem("isLoggedIn") === "true") {
-      navigate("/"); // already logged in → redirect home
-    }
-  }, []);
+    const token = localStorage.getItem("token");
+    const hospitalId = localStorage.getItem("hospitalId");
+    console.log("🔍 Checking existing login:", { token, hospitalId });
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+    if (token) {
+      if (hospitalId) {
+        console.log("✅ Already logged in hospital → /hospital/dashboard");
+        navigate("/hospital/dashboard");
+      } else {
+        console.log("👨‍⚕️ Admin logged in → /hospital-login");
+        navigate("/hospital-login");
+      }
+    }
+  }, [navigate]);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Submitted:", form);
+    setLoading(true);
+    console.log("🟢 Submitting login form:", form);
 
     try {
-      // ✅ API call to backend
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
-        form
-      );
+      const response = await axios.post("http://localhost:8080/api/auth/login", form);
+      console.log("✅ Login success:", response.data);
 
-      console.log("Login Success:", response.data);
-
-      // ✅ store token (assuming backend returns { token: "xyz" })
-      localStorage.setItem("token", response.data.token);
+      const { token } = response.data;
+      localStorage.setItem("token", token);
       localStorage.setItem("isLoggedIn", "true");
 
-      // ✅ Redirect to home
-      navigate("/");
-    } catch (error) {
-      console.error("Login Error:", error);
+      navigate("/hospital-login");
+    } catch (err) {
+      console.error("❌ Login failed:", err);
       setError("Invalid email or password. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,8 +71,8 @@ const Login = () => {
                 placeholder="Email"
                 value={form.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 required
+                className="w-full px-4 py-2 border border-emerald-300 rounded"
               />
               <input
                 type="password"
@@ -73,29 +80,21 @@ const Login = () => {
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 required
+                className="w-full px-4 py-2 border border-emerald-300 rounded"
               />
-
-              {/* ✅ Error message */}
-              {error && (
-                <p className="text-red-500 text-sm text-center">{error}</p>
-              )}
-
+              {error && <p className="text-red-500 text-sm text-center">{error}</p>}
               <button
                 type="submit"
-                className="w-full bg-emerald-500 text-white py-2 rounded hover:bg-emerald-400 transition"
+                disabled={loading}
+                className="w-full bg-emerald-500 text-white py-2 rounded hover:bg-emerald-400"
               >
-                Login
+                {loading ? "Logging in..." : "Login"}
               </button>
             </form>
-
             <p className="mt-4 text-center text-emerald-600">
               Don’t have an account?{" "}
-              <Link
-                to="/signup"
-                className="font-semibold underline hover:text-emerald-700"
-              >
+              <Link to="/signup" className="underline font-semibold">
                 Sign up
               </Link>
             </p>
