@@ -9,7 +9,7 @@ const Signup = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    phone: "",
+    phoneNo: "", // Backend field name
     role: "",
     password: "",
   });
@@ -30,8 +30,8 @@ const Signup = () => {
 
       console.log("Signup Successful:", response.data);
 
-      // ✅ Navigate to OTP page on success
-      navigate("/otp");
+      // ✅ Pass email to OTP page
+      navigate("/otp", { state: { email: form.email } });
     } catch (error) {
       console.error("Signup Error:", error);
       if (error.response) {
@@ -91,9 +91,9 @@ const Signup = () => {
               />
               <input
                 type="tel"
-                name="phone"
+                name="phoneNo"
                 placeholder="Phone Number"
-                value={form.phone}
+                value={form.phoneNo}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 required
@@ -106,7 +106,7 @@ const Signup = () => {
                 required
               >
                 <option value="">Select Role</option>
-                <option value="admin">Hospital Admin</option>
+                <option value="admin">Hospital_Admin</option>
                 <option value="doctor">Doctor</option>
               </select>
               <input
