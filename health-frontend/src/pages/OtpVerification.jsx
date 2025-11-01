@@ -1,13 +1,42 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const OtpVerification = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
+  const [email, setEmail] = useState("");
   const inputRefs = useRef([]);
   const navigate = useNavigate();
+  const location = useLocation();
 
+  // 🔹 Get email from navigation (passed during signup)
+  useEffect(() => {
+    if (location.state && location.state.email) {
+      setEmail(location.state.email);
+      sendOtp(location.state.email); // 🔹 Auto-send OTP when page opens
+    } else {
+      alert("Email not found! Please signup again.");
+      navigate("/signup");
+    }
+  }, [location, navigate]);
+
+  // 🔹 Send OTP API call
+  const sendOtp = async (email) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/auth/send-otp?email=${email}`
+      );
+      console.log(response.data);
+      alert("OTP sent to your email!");
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Failed to send OTP. Please try again.");
+    }
+  };
+
+  // 🔹 OTP input handler
   const handleChange = (e, index) => {
     const value = e.target.value;
     if (!/^[0-9]?$/.test(value)) return;
@@ -22,13 +51,26 @@ const OtpVerification = () => {
 
   const isComplete = otp.every((digit) => digit !== "");
 
-  const handleSubmit = (e) => {
+  // 🔹 Verify OTP API call
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Entered OTP:", otp.join(""));
+    const enteredOtp = otp.join("");
+    console.log("Entered OTP:", enteredOtp);
 
-    // OTP backend verification here
-    // On success → redirect home
-    navigate("/");
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/auth/verify-otp?email=${email}&otp=${enteredOtp}`
+      );
+
+      console.log("OTP Verified:", response.data);
+      alert("OTP verified successfully!");
+
+      // ✅ Redirect after success
+      navigate("/");
+    } catch (error) {
+      console.error("OTP Verification Failed:", error);
+      alert("Invalid or expired OTP. Please try again.");
+    }
   };
 
   return (
@@ -74,7 +116,10 @@ const OtpVerification = () => {
 
           <p className="mt-4 text-sm text-emerald-600">
             Didn’t receive the code?{" "}
-            <button className="font-semibold underline hover:text-emerald-700">
+            <button
+              onClick={() => sendOtp(email)}
+              className="font-semibold underline hover:text-emerald-700"
+            >
               Resend
             </button>
           </p>

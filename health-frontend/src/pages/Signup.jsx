@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { FaHeart } from "react-icons/fa";
@@ -14,22 +15,38 @@ const Signup = () => {
   });
   const navigate = useNavigate();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Signup Submitted:", form);
 
-    // Backend signup logic here
-    // On success → navigate to OTP screen
-    navigate("/otp");
+    try {
+      const response = await axios.post("http://localhost:8080/api/auth/signup", form, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      console.log("Signup Successful:", response.data);
+
+      // ✅ Navigate to OTP page on success
+      navigate("/otp");
+    } catch (error) {
+      console.error("Signup Error:", error);
+      if (error.response) {
+        alert("Signup failed: " + error.response.data);
+      } else {
+        alert("Server not reachable. Try again later.");
+      }
+    }
   };
 
   return (
     <div className="min-h-screen bg-white font-sans">
       <Navbar />
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-64px)]">
-        {/* Left side image */}
+        {/* Left Section */}
         <div className="md:w-1/2 bg-green-50 flex items-center justify-center p-8">
           <div className="text-center">
             <img
@@ -43,7 +60,7 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* Right side form */}
+        {/* Right Section */}
         <div className="md:w-1/2 flex flex-col justify-center p-12">
           <div className="max-w-md w-full mx-auto">
             <div className="flex flex-col items-center mb-8">
