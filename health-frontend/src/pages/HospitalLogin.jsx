@@ -1,3 +1,4 @@
+// HospitalLogin.jsx
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -12,7 +13,6 @@ const HospitalLogin = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("🔑 Admin Token:", token);
     if (!token) setError("Admin not logged in. Please login first.");
   }, []);
 
@@ -21,13 +21,11 @@ const HospitalLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("📨 Submitting form:", form);
-
     setLoading(true);
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("adminToken");
       if (!token) throw new Error("Admin not logged in");
 
       const response = await axios.post(
@@ -41,14 +39,12 @@ const HospitalLogin = () => {
         }
       );
 
-      console.log("✅ Hospital Login Success:", response.data);
-
       localStorage.setItem("hospitalId", response.data.id);
       localStorage.setItem("isHospitalLoggedIn", "true");
 
       navigate("/hospital/dashboard");
     } catch (err) {
-      console.error("❌ Hospital Login Error:", err);
+      console.error(err);
       setError(
         err.response?.data?.message ||
           err.message ||
@@ -57,6 +53,10 @@ const HospitalLogin = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRegisterClick = () => {
+    navigate("/hospital/register");
   };
 
   return (
@@ -68,20 +68,17 @@ const HospitalLogin = () => {
             Welcome Hospital Admin
           </h2>
         </div>
-
         <div className="md:w-1/2 flex flex-col justify-center p-12">
           <div className="max-w-md w-full mx-auto">
             <h2 className="text-2xl font-bold text-emerald-700 mb-6 text-center">
               Hospital Login
             </h2>
-
             {loading && (
               <div className="text-center text-emerald-700 font-bold mb-4">
                 Logging in...
               </div>
             )}
             {error && <div className="text-red-500 text-center mb-4">{error}</div>}
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="email"
@@ -101,7 +98,6 @@ const HospitalLogin = () => {
                 className="w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
               />
-
               <button
                 type="submit"
                 disabled={loading}
@@ -110,15 +106,14 @@ const HospitalLogin = () => {
                 Login
               </button>
             </form>
-
             <p className="mt-4 text-center text-blue-600">
               Don’t have a hospital account?{" "}
-              <a
-                href="/hospital/register"
+              <button
+                onClick={handleRegisterClick}
                 className="font-semibold underline hover:text-blue-700"
               >
                 Register Hospital
-              </a>
+              </button>
             </p>
           </div>
         </div>

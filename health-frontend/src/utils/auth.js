@@ -1,5 +1,5 @@
 export const isTokenValid = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken"); 
   console.log("🔍 Checking token:", token);
 
   if (!token) return false;
@@ -21,7 +21,7 @@ export const checkAuthAndHospital = () => {
   console.log("⚙️ Checking auth and hospital...");
   if (!isTokenValid()) {
     console.log("🚫 Token invalid — redirecting to /login");
-    localStorage.removeItem("token");
+    localStorage.removeItem("adminToken");
     localStorage.removeItem("hospitalId");
     return { redirect: "/login" };
   }

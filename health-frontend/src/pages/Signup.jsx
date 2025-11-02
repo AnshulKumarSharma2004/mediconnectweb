@@ -9,10 +9,12 @@ const Signup = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    phoneNo: "", // Backend field name
+    phoneNo: "",
     role: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,24 +23,29 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signup Submitted:", form);
+    setLoading(true);
+    setError("");
 
     try {
-      const response = await axios.post("http://localhost:8080/api/auth/signup", form, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/signup",
+        form,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       console.log("Signup Successful:", response.data);
 
-      // ✅ Pass email to OTP page
+      // Navigate to OTP page with email
       navigate("/otp", { state: { email: form.email } });
-    } catch (error) {
-      console.error("Signup Error:", error);
-      if (error.response) {
-        alert("Signup failed: " + error.response.data);
-      } else {
-        alert("Server not reachable. Try again later.");
-      }
+    } catch (err) {
+      console.error("Signup Error:", err);
+      setError(
+        err.response?.data || "Server not reachable. Please try again later."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,12 +70,18 @@ const Signup = () => {
         {/* Right Section */}
         <div className="md:w-1/2 flex flex-col justify-center p-12">
           <div className="max-w-md w-full mx-auto">
-            <div className="flex flex-col items-center mb-8">
+            <div className="flex flex-col items-center mb-6">
               <div className="flex items-center justify-center mb-2">
                 <FaHeart className="text-emerald-500 text-2xl mr-2" />
-                <h2 className="text-2xl font-bold text-emerald-700">Create Account</h2>
+                <h2 className="text-2xl font-bold text-emerald-700">
+                  Create Account
+                </h2>
               </div>
             </div>
+
+            {error && (
+              <p className="text-red-500 text-center mb-4">{error}</p>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
@@ -105,7 +118,9 @@ const Signup = () => {
                 className="w-full px-4 py-2 border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 required
               >
-                <option value="">Select Role</option>
+                <option value="" disabled>
+                  Select Role
+                </option>
                 <option value="HOSPITAL_ADMIN">HOSPITAL_ADMIN</option>
                 <option value="DOCTOR">DOCTOR</option>
               </select>
@@ -121,9 +136,10 @@ const Signup = () => {
 
               <button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-emerald-500 text-white py-2 rounded hover:bg-emerald-400 transition"
               >
-                Create Account
+                {loading ? "Creating Account..." : "Create Account"}
               </button>
             </form>
           </div>

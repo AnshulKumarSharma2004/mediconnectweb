@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 const HospitalDashboard = () => {
   useEffect(() => {
     const hospitalId = localStorage.getItem("hospitalId");
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adminToken");
     console.log("🏥 HospitalDashboard Loaded →", { hospitalId, token });
   }, []);
 
