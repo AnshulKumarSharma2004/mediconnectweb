@@ -33,6 +33,12 @@ const Login = () => {
   const decodedData = JSON.parse(atob(base64));
 
   console.log("🟢 JWT Decoded:", decodedData);
+  localStorage.setItem("adminName", decodedData.name || "");
+  localStorage.setItem("role", decodedData.role || "");
+   console.log("💾 Name and Role stored:", {
+        name: decodedData.name,
+        role: decodedData.role,
+      });
   console.log("📅 Expiration (epoch):", decodedData.exp);
   console.log("🕒 Expiration (readable):", new Date(decodedData.exp * 1000));
   console.log("🕒 Current Time:", new Date());

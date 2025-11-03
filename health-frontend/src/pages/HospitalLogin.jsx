@@ -12,7 +12,7 @@ const HospitalLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adminToken");
     if (!token) setError("Admin not logged in. Please login first.");
   }, []);
 
@@ -42,7 +42,7 @@ const HospitalLogin = () => {
       localStorage.setItem("hospitalId", response.data.id);
       localStorage.setItem("isHospitalLoggedIn", "true");
 
-      navigate("/hospital/dashboard");
+     navigate("/hospital");
     } catch (err) {
       console.error(err);
       setError(

@@ -23,6 +23,10 @@ export const checkAuthAndHospital = () => {
     console.log("🚫 Token invalid — redirecting to /login");
     localStorage.removeItem("adminToken");
     localStorage.removeItem("hospitalId");
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("isHospitalLoggedIn");
+    localStorage.removeItem("adminName");
+    localStorage.removeItem("role");
     return { redirect: "/login" };
   }
 
@@ -30,8 +34,8 @@ export const checkAuthAndHospital = () => {
   console.log("🏥 Hospital ID found:", hospitalId);
 
   if (hospitalId) {
-    console.log("➡️ Redirecting to /hospital/dashboard");
-    return { redirect: "/hospital/dashboard" };
+    console.log("➡️ Redirecting to /hospital (HospitalLayout)");
+    return { redirect: "/hospital" };
   }
 
   console.log("➡️ Redirecting to /hospital-login");

@@ -7,7 +7,7 @@ import Signup from "./pages/Signup";
 import OtpVerification from "./pages/OtpVerification";
 import HospitalLogin from "./pages/HospitalLogin";
 import HospitalRegister from "./pages/HospitalRegister";
-import HospitalDashboard from "./pages/HospitalDashboard";
+import HospitalLayout from "./layouts/HospitalLayout";
 
 function App() {
   console.log("✅ App mounted — routes loaded");
@@ -21,7 +21,7 @@ function App() {
         <Route path="/otp" element={<OtpVerification />} />
         <Route path="/hospital-login" element={<HospitalLogin />} />
         <Route path="/hospital/register" element={<HospitalRegister />} />
-        <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
+        <Route path="/hospital/*" element={<HospitalLayout />} />
       </Routes>
     </Router>
   );
